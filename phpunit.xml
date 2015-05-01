@@ -1,0 +1,23 @@
+<phpunit
+        bootstrap="vendor/autoload.php"
+        colors="true"
+        convertErrorsToExceptions="true"
+        convertNoticesToExceptions="true"
+        convertWarningsToExceptions="true"
+        processIsolation="false"
+        stopOnError="false"
+        stopOnFailure="false"
+        stopOnIncomplete="false"
+        stopOnSkipped="false"
+        timeoutForSmallTests="1"
+        timeoutForMediumTests="10"
+        timeoutForLargeTests="60"
+        strict="true"
+        verbose="true"
+        >
+    <testsuites>
+        <testsuite name="Complete" suffix="Test.php">
+            <directory>tests/</directory>
+        </testsuite>
+    </testsuites>
+</phpunit>

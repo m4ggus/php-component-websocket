@@ -1,0 +1,11 @@
+{
+	"name": "mib/php-websocket",
+	"description": "PHP Library for creating web sockets",
+	"type": "library",
+	"license": "MIT",
+	"autoload": {
+		"psr-4": {
+			"Mib\\Component\\WebSocket\\": "src/"
+		}
+	}
+}

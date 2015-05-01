@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>	
+</head>
+<body>
+	<script>
+		(function(MIB, undefined){
+
+			function WebSocketClient(url)
+			{
+				var socket = new WebSocket(url);
+				
+				socket.onopen = function(msg) {
+					console.log('onopen');
+				};
+				socket.onmessage = function(msg) {
+					console.log('onmessage', msg);
+				};
+				socket.onclose = function (msg) {
+					console.log('onclose');
+				};
+				
+				this.socket = socket;
+			}
+
+			WebSocketClient.prototype.send = function(msg) {
+				this.socket.send(msg);
+			};
+			
+			WebSocketClient.prototype.close = function() {
+				this.socket.close();	
+			};
+
+			MIB.WebSocketClient = WebSocketClient;
+
+			function onLoad() {
+				MIB.socket = new WebSocketClient('ws://localhost:9999');	
+			}
+
+			if (window.onload) {
+				var fnc = window.onload;
+				window.onload = function() {
+					fnc();
+					onLoad();
+				};
+			} else {
+				window.onload = onLoad;
+			}
+			
+			
+
+		})(MIB = window.MIB || {});
+	</script>
+</body>
+</html>
