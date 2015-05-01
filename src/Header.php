@@ -1,7 +1,11 @@
 <?php
 	
 namespace Mib\Component\WebSocket;
-	
+
+/**
+ * Class Header
+ * @package Mib\Component\WebSocket
+ */
 class Header
 {	
 	private $fin;

@@ -2,6 +2,10 @@
 
 namespace Mib\Component\WebSocket;
 
+/**
+ * Class ServerFactory
+ * @package Mib\Component\WebSocket
+ */
 class ServerFactory
 {
 	

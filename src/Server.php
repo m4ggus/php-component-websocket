@@ -2,6 +2,10 @@
 
 namespace Mib\Component\WebSocket;
 
+/**
+ * Class Server
+ * @package Mib\Component\WebSocket
+ */
 class Server
 {
 	/** @var Socket */

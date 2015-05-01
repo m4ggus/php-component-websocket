@@ -2,6 +2,10 @@
 
 namespace Mib\Component\WebSocket;
 
+/**
+ * Class Handshake
+ * @package Mib\Component\WebSocket
+ */
 class Handshake
 {
 	const TOKEN = '258EAFA5-E914-47DA-95CA-C5AB0DC85B11';
@@ -15,9 +19,14 @@ class Handshake
     /** @var string */
 	private $token;
 
-	public function buildFromHeader($buffer)
+    /**
+     * Creates a handshake response by the given request
+     * @param $request
+     * @return string
+     */
+	public function buildFromHeader($request)
 	{
-		$lines   = explode("\n", $buffer);
+		$lines   = explode("\n", $request);
 		$path    = null;
 		$headers = [];
 
@@ -54,6 +63,9 @@ class Handshake
         return $this->getResponse();
 	}
 
+    /**
+     * @return string
+     */
 	public function getResponse()
 	{
 		$accept = base64_encode(

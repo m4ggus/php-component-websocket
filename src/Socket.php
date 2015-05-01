@@ -2,6 +2,10 @@
 
 namespace Mib\Component\WebSocket;
 
+/**
+ * Class Socket
+ * @package Mib\Component\WebSocket
+ */
 class Socket
 {
 	const BUFFER_SIZE = 4096;

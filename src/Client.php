@@ -1,13 +1,11 @@
 <?php
-/**
- * User: marcus
- * Date: 4/28/15
- * Time: 8:24 PM
- */
 
 namespace Mib\Component\WebSocket;
 
-
+/**
+ * Class Client
+ * @package Mib\Component\WebSocket
+ */
 class Client {
 
     /** @var string */
@@ -18,10 +16,17 @@ class Client {
      */
     private $socket;
 
-
+    /**
+     * @var boolean
+     */
     private $authenticated;
 
 
+    /**
+     * Constructor
+     * @param null|string $id
+     * @param Socket      $socket
+     */
     public function __construct($id = null,Socket $socket)
     {
         $this->socket = $socket;
@@ -33,16 +38,30 @@ class Client {
         $this->id = $id;
     }
 
+    /**
+     * Returns the socket associated with the client
+     * @return Socket
+     */
     public function getSocket()
     {
         return $this->socket;
     }
 
+    /**
+     * Returns true if the web socket is already authenticated
+     * @return bool
+     */
     public function isAuthenticated()
     {
         return $this->authenticated;
     }
 
+    /**
+     * Handles the handshake by the given handshake provider
+     * @param Handshake $handshake
+     * @param           $buffer
+     * @throws Exception
+     */
     public function handshake(Handshake $handshake, $buffer)
     {
         $response = $handshake->buildFromHeader($buffer);

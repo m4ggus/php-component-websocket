@@ -2,6 +2,10 @@
 	
 namespace Mib\Component\WebSocket;
 
+/**
+ * Class FrameDecoder
+ * @package Mib\Component\WebSocket
+ */
 class FrameDecoder
 {
 	const FIN = 128;
@@ -16,9 +20,14 @@ class FrameDecoder
 	const BYTE = 256;
 	const SHORT = 65536;
 
-	
+    /**
+     * Decodes a web socket message frame
+     * @param $message
+     * @return Frame
+     */
 	public function decode($message)
 	{
+        $opCode  = ord($message[0]) & self::OPCODE;
 		$mask    = ($message[1] & chr(self::MASK)) == chr(self::MASK);
 		$maskKey = !$mask ? '' : $message[2] . $message[3] . $message[4] . $message[5];
 		$payload = ord($message[1]) > 128 ? ord($message[1]) - 128 : ord($message[1]);
@@ -57,8 +66,8 @@ class FrameDecoder
 		$header->setFin(($message[0] & chr(self::FIN)) == chr(self::FIN));		
 		$header->setRsv1(($message[0] & chr(self::RSV1)) == chr(self::RSV1));
 		$header->setRsv2(($message[0] & chr(self::RSV2)) == chr(self::RSV2));
-		$header->setRsv3(($message[0] & chr(self::RSV3)) == chr(self::RSV3));		
-		$header->setOpcode(ord($message[0]) & self::OPCODE);		
+		$header->setRsv3(($message[0] & chr(self::RSV3)) == chr(self::RSV3));
+        $header->setOpcode($opCode);
 		$header->setMask($mask);		
 		$header->setPayload($payload);
 		$header->setMaskKey($maskKey);				
