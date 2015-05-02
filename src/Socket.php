@@ -127,6 +127,21 @@ class Socket
 		return $ip;
 	}
 
+	/**
+	 * @return string
+	 * @throws Exception
+	 */
+	public function getPort()
+	{
+		if (false === @socket_getpeername($this->resource, $ip, $port)) {
+			$error = socket_last_error($this->resource);
+			$message = socket_strerror($error);
+			throw new Exception($message);
+		}
+
+		return $port;
+	}
+
     /**
      * Read from the socket and returns the string
      *

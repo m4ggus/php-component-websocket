@@ -1,6 +1,7 @@
 <?php
 
 namespace Mib\Component\WebSocket;
+use Mib\Component\WebSocket\Exception\InvalidArgumentException;
 use Mib\Component\WebSocket\Http\Request;
 
 /**
@@ -17,6 +18,9 @@ class Server
 
     /** @var FrameDecoder */
     private $decoder;
+
+    /** @var array|CommandInterface[] */
+    private $commands;
 
     public function __construct($socket, $decoder)
     {
@@ -40,6 +44,14 @@ class Server
         unset($this->clients[$index]);
 
         return true;
+    }
+
+    /**
+     * @return array|Client[]
+     */
+    public function getClients()
+    {
+        return $this->clients;
     }
 
     public function getClientSockets()
@@ -134,13 +146,7 @@ class Server
                     continue;
                 }
 
-                echo substr($frame->getData(), 0, 40) . PHP_EOL;
-
-                if ($frame->getData() == 'load') {
-                    $client->write(`ps aux`);
-                } else if ($frame->getData() == 'uptime') {
-                    $client->write(`uptime`);
-                }
+                $this->handleCommand($client, $frame);
                 // do something with data
             } // end foreach
 
@@ -150,5 +156,30 @@ class Server
 
         // close the server socket
         $socket->close();
+    }
+
+    /**
+     * Registers a command
+     * @param CommandInterface $command
+     */
+    public function registerCommand(CommandInterface $command)
+    {
+        if (isset($this->commands[$command->getName()])) {
+            return;
+        }
+
+        $this->commands[$command->getName()] = $command;
+    }
+
+    private function handleCommand(Client $client, Frame $frame)
+    {
+        $cmd = strtolower(trim($frame->getData()));
+
+        if (!isset($this->commands[$cmd])) {
+            $client->write('invalid cmd');
+            return;
+        }
+
+        $this->commands[$cmd]->run($this, $client);
     }
 }

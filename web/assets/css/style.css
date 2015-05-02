@@ -32,7 +32,8 @@ body {
 
 header#header {
     position: fixed;
-    background: #c8c8c8;
+    background: #1FBBA6;
+    color: #ffffff;
     top: 0;
     left: 0;
     right: 0;
