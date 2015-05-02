@@ -25,7 +25,14 @@ class ServerInfo extends AbstractCommand {
             $ip     = $socket->getPeer();
             $port   = $socket->getPort();
 
-            $message .= sprintf("[%3s] %15s:%s\n", $index, $ip, $port);
+            if (!$i) {
+                $message .= sprintf("+%'-24s+\n", '-');
+                $message .= sprintf("|%24s|\n", 'Server Information');
+                $message .= sprintf("|%24s|\n", 'Clients: '.$l);
+                $message .= sprintf("+%'-24s+\n", '-');
+            }
+
+            $message .= sprintf("%03s: %15s:%-5s\n", $index, $ip, $port);
         }
 
         $client->write($message);
