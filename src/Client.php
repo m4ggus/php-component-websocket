@@ -1,6 +1,7 @@
 <?php
 
 namespace Mib\Component\WebSocket;
+use Mib\Component\WebSocket\Http\Request;
 
 /**
  * Class Client
@@ -63,14 +64,14 @@ class Client {
     /**
      * Handles the handshake by the given handshake provider
      * @param Handshake $handshake
-     * @param           $buffer
-     * @throws Exception
+     * @param Request   $request
+     * @throws Exception\IOException
      */
-    public function handshake(Handshake $handshake, $buffer)
+    public function handshake(Handshake $handshake, Request $request)
     {
-        $response = $handshake->buildFromHeader($buffer);
+        $response = $handshake->createResponse($request);
 
-        $this->socket->write($response);
+        $this->socket->write($response->__toString());
 
         $this->authenticated = true;
     }

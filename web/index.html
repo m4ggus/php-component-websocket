@@ -1,83 +1,18 @@
 <!DOCTYPE html>
 <html>
-<head>	
+<head>
+	<link rel="stylesheet" href="assets/css/style.css">
 </head>
 <body>
-    <input id="command">
-    <div id="debug"></div>
-	<script>
-		(function(MIB, undefined){
-            function htmlEntities(str) {
-                return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
-            }
-
-			function WebSocketClient(url)
-			{
-				var socket = new WebSocket(url);
-				
-				socket.onopen = function(msg) {
-					var p = document.createElement('p');
-                    p.innerHTML = 'Connected to: ' + msg.currentTarget.url;
-                    MIB.debug.appendChild(p);
-				};
-				socket.onmessage = function(msg) {
-					console.log('onmessage', msg);
-                    var p = document.createElement('p'),
-                        pre = document.createElement('pre');
-
-                    pre.innerHTML = htmlEntities(msg.data);
-
-                    p.appendChild(pre);
-
-                    MIB.debug.appendChild(p);
-				};
-				socket.onclose = function (msg) {
-					console.log('onclose');
-				};
-				
-				this.socket = socket;
-			}
-
-			WebSocketClient.prototype.send = function(msg) {
-				this.socket.send(msg);
-			};
-			
-			WebSocketClient.prototype.close = function() {
-				this.socket.close();	
-			};
-
-			MIB.WebSocketClient = WebSocketClient;
-
-			function onLoad() {
-				MIB.socket = new WebSocketClient('ws://localhost:9999');
-                MIB.debug  = document.getElementById('debug');
-                MIB.command = document.getElementById('command');
-
-                MIB.command.onkeydown = function(event) {
-                    var value = event.currentTarget.value;
-
-                    if (event.keyCode != 13) return;
-                    if ('' == value.trim()) return;
-
-                    event.currentTarget.value = '';
-
-                    MIB.socket.send(value);
-                }
-			}
-
-			if (window.onload) {
-				var fnc = window.onload;
-				window.onload = function() {
-					fnc();
-					onLoad();
-				};
-			} else {
-				window.onload = onLoad;
-			}
-			
-			
-
-		})(MIB = window.MIB || {});
-	</script>
+    <div id="wrapper">
+        <header id="header">
+            <div id="control">
+                <label for="command">Command:</label>
+                <input id="command" name="command"><input type="button" value="Clear" id="clear">
+            </div>
+        </header>
+        <div id="debug"></div>
+    </div>
+    <script src="assets/js/mib.websocket.js"></script>
 </body>
 </html>

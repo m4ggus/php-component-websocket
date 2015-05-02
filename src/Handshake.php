@@ -1,6 +1,8 @@
 <?php
 
 namespace Mib\Component\WebSocket;
+use Mib\Component\WebSocket\Http\Request;
+use Mib\Component\WebSocket\Http\Response;
 
 /**
  * Class Handshake
@@ -80,4 +82,38 @@ class Handshake
 			. "Sec-WebSocket-Accept:$accept\r\n\r\n";
 
 	}
+
+    /**
+     * @param Request $request
+     * @return Response
+     */
+    public function createResponse(Request $request)
+    {
+        $statusCode = 101;
+        $headers    = [];
+        $content    = '';
+
+        $socket = $request->getHeader('host');
+        $parts  = explode(':', $socket);
+        $host   = $parts[0];
+        $port   = $parts[1];
+        $key    = $request->getHeader('sec-websocket-key');
+        $origin = $request->hasHeader('origin') ? $request->getHeader('origin') : $host;
+        $token  = $this->createToken($key);
+
+        $headers['Upgrade']              = 'websocket';
+        $headers['Connection']           = 'Upgrade';
+        $headers['WebSocket-Origin']     = "http://{$host}";
+        $headers['WebSocket-Location']   = "ws://{$host}:{$port}/{$request->getRequestUri()}";
+        $headers['Sec-WebSocket-Accept'] = $token;
+
+        return new Response($content, $statusCode, $headers);
+    }
+
+    private function createToken($key)
+    {
+        return base64_encode(
+            pack('H*', sha1($key . self::TOKEN))
+        );
+    }
 }
