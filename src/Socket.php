@@ -166,9 +166,7 @@ class Socket
 			$sent = @socket_write(
 				$this->resource, 
 				$buffer, 
-				$length < self::BUFFER_SIZE 
-				? $length 
-				: self::BUFFER_SIZE
+				$length
 			);
 
 			if ($sent === false) {

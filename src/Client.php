@@ -92,23 +92,23 @@ class Client {
     {
         /*
          * @TODO if the encoded frame is split up on the socket write process the js client will got a broken package
+         * socket_get_option($this->resource, SOL_SOCKET, SO_SNDBUF) ??
          */
 
         $frameData = $this->encoder->encode($message);
-        
         $frameLength = strlen($frameData);
-        
-        while ($frameLength > Socket::BUFFER_SIZE) {
-            $buffer = substr($frameData, 0, Socket::BUFFER_SIZE);
-            $bytes = $this->socket->write($buffer, Socket::BUFFER_SIZE);
 
-            $frameData = substr($frameData, $bytes);
-            $frameLength = strlen($frameData);
-        }
-        
-        if ($frameLength == 0) {
-            return;
-        }
+//        while ($frameLength > Socket::BUFFER_SIZE) {
+//            $buffer = substr($frameData, 0, Socket::BUFFER_SIZE);
+//            $bytes = $this->socket->write($buffer, Socket::BUFFER_SIZE);
+//
+//            $frameData = substr($frameData, $bytes);
+//            $frameLength = strlen($frameData);
+//        }
+//
+//        if ($frameLength == 0) {
+//            return;
+//        }
         
         $this->socket->write($frameData, $frameLength);
     }

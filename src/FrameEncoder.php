@@ -32,20 +32,21 @@ class FrameEncoder {
         } else if ($length < Frame::SHORT) {
             // 16 bit
             $prefix .= chr(Frame::LENGTH_16BIT);
-            $prefix .= chr($length / Frame::BYTE) . chr($length & Frame::BYTE);
+            $prefix .=chr($length / Frame::BYTE)
+                    . chr($length % Frame::BYTE)
+                ;
         } else {
             // 64bit
             $prefix .= chr(Frame::LENGTH_64BIT);
-            $prefix
-                .=chr($length / (Frame::SHORT * Frame::SHORT * Frame::SHORT * Frame::BYTE))
-                . chr($length / (Frame::SHORT * Frame::SHORT * Frame::SHORT))
-                . chr($length / (Frame::SHORT * Frame::SHORT * Frame::BYTE))
-                . chr($length / (Frame::SHORT * Frame::SHORT))
-                . chr($length / (Frame::SHORT * Frame::BYTE))
-                . chr($length / Frame::SHORT)
-                . chr($length / Frame::BYTE)
-                . chr($length % Frame::BYTE)
-            ;
+            $prefix .=chr($length / (Frame::SHORT * Frame::SHORT * Frame::SHORT * Frame::BYTE))
+                    . chr($length / (Frame::SHORT * Frame::SHORT * Frame::SHORT))
+                    . chr($length / (Frame::SHORT * Frame::SHORT * Frame::BYTE))
+                    . chr($length / (Frame::SHORT * Frame::SHORT))
+                    . chr($length / (Frame::SHORT * Frame::BYTE))
+                    . chr($length / Frame::SHORT)
+                    . chr($length / Frame::BYTE)
+                    . chr($length % Frame::BYTE)
+                ;
         }
 
         return $prefix.$message;
