@@ -67,7 +67,7 @@ class Header
 		$this->opcode = $opcode;
 	}
 	
-	public function getMask($mask)
+	public function getMask()
 	{
 		return $this->mask;
 	}

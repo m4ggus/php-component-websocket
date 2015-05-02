@@ -8,18 +8,6 @@ namespace Mib\Component\WebSocket;
  */
 class FrameDecoder
 {
-	const FIN = 128;
-	const RSV1 = 64;
-	const RSV2 = 32;
-	const RSV3 = 16;
-	
-	const OPCODE = 15;
-	
-	const MASK = 128;
-	
-	const BYTE = 256;
-	const SHORT = 65536;
-
     /**
      * Decodes a web socket message frame
      * @param $message
@@ -27,35 +15,35 @@ class FrameDecoder
      */
 	public function decode($message)
 	{
-        $opCode  = ord($message[0]) & self::OPCODE;
-		$mask    = ($message[1] & chr(self::MASK)) == chr(self::MASK);
+        $opCode  = ord($message[0]) & Frame::OP_CODES;
+		$mask    = ($message[1] & chr(Frame::MASK)) == chr(Frame::MASK);
 		$maskKey = !$mask ? '' : $message[2] . $message[3] . $message[4] . $message[5];
 		$payload = ord($message[1]) > 128 ? ord($message[1]) - 128 : ord($message[1]);
 		$dataOffset = !$mask ? 2 : 6;
 		
-		if ($payload == 126) {
+		if ($payload == FRAME::LENGTH_16BIT) {
 			
 			if ($mask) {
 				$maskKey = $message[4] . $message[5] . $message[6] . $message[7];
 			}
 			
-			$payload = ord($message[2]) * self::BYTE + ord($message[3]);
+			$payload = ord($message[2]) * Frame::BYTE + ord($message[3]);
 			$dataOffset = 8;
 						
-		} elseif ($payload == 127) {
+		} elseif ($payload == FRAME::LENGTH_64BIT) {
 			
 			if ($mask) {
 				$maskKey = $message[10] . $message[11] . $message[12] . $message[13];
 			}
 			
 			$payload = 
-				  ord($message[2]) * self::SHORT * self::SHORT * self::SHORT * self::BYTE
-				+ ord($message[3]) * self::SHORT * self::SHORT * self::SHORT
-				+ ord($message[4]) * self::SHORT * self::SHORT * self::BYTE
-				+ ord($message[5]) * self::SHORT * self::SHORT
-				+ ord($message[6]) * self::SHORT * self::BYTE
-				+ ord($message[7]) * self::SHORT
-				+ ord($message[8]) * self::BYTE
+				  ord($message[2]) * Frame::SHORT * Frame::SHORT * Frame::SHORT * Frame::BYTE
+				+ ord($message[3]) * Frame::SHORT * Frame::SHORT * Frame::SHORT
+				+ ord($message[4]) * Frame::SHORT * Frame::SHORT * Frame::BYTE
+				+ ord($message[5]) * Frame::SHORT * Frame::SHORT
+				+ ord($message[6]) * Frame::SHORT * Frame::BYTE
+				+ ord($message[7]) * Frame::SHORT
+				+ ord($message[8]) * Frame::BYTE
 				+ ord($message[9])
 			;
 				
@@ -63,10 +51,10 @@ class FrameDecoder
 		}
 		
 		$header = new Header();		
-		$header->setFin(($message[0] & chr(self::FIN)) == chr(self::FIN));		
-		$header->setRsv1(($message[0] & chr(self::RSV1)) == chr(self::RSV1));
-		$header->setRsv2(($message[0] & chr(self::RSV2)) == chr(self::RSV2));
-		$header->setRsv3(($message[0] & chr(self::RSV3)) == chr(self::RSV3));
+		$header->setFin(($message[0] & chr(Frame::FIN)) == chr(Frame::FIN));		
+		$header->setRsv1(($message[0] & chr(Frame::RSV1)) == chr(Frame::RSV1));
+		$header->setRsv2(($message[0] & chr(Frame::RSV2)) == chr(Frame::RSV2));
+		$header->setRsv3(($message[0] & chr(Frame::RSV3)) == chr(Frame::RSV3));
         $header->setOpcode($opCode);
 		$header->setMask($mask);		
 		$header->setPayload($payload);

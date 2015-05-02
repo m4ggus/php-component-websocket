@@ -21,13 +21,15 @@ class Client {
      */
     private $authenticated;
 
+    private $encoder;
 
     /**
      * Constructor
-     * @param null|string $id
-     * @param Socket      $socket
+     * @param null|string  $id
+     * @param Socket       $socket
+     * @param FrameEncoder $encoder
      */
-    public function __construct($id = null,Socket $socket)
+    public function __construct($id = null,Socket $socket, FrameEncoder $encoder)
     {
         $this->socket = $socket;
 
@@ -36,6 +38,8 @@ class Client {
         }
 
         $this->id = $id;
+
+        $this->encoder = $encoder;
     }
 
     /**
@@ -85,39 +89,27 @@ class Client {
     }
     
     public function write($message)
-    {        
-        // FIN, NO RSV1, NO RSV2, NORSV3, OPCODE 1   
-        $m = chr(129);
+    {
+        /*
+         * @TODO if the encoded frame is split up on the socket write process the js client will got a broken package
+         */
+
+        $frameData = $this->encoder->encode($message);
         
-        $l = strlen($message);
-        if ($l < 127)
-            // NO MASK, 7-BIT LENGTH
-            $m .= chr($l);
-        elseif ($l < 65536) {
-            // NO MASK, 16-BIT LENGTH
-            $m .= chr(126);
-            $m .= chr($l / 256);
-            $m .= chr($l % 256);
-        } else {
-            // NO MASK, 64-BIT LENGTH
-        }
-                
-        $message = $m . $message;
+        $frameLength = strlen($frameData);
         
-        $messageLength = strlen($message);
-        
-        while ($messageLength > Socket::BUFFER_SIZE) {
-            $buffer = substr($message, 0, Socket::BUFFER_SIZE);
-            $this->socket->write($buffer, Socket::BUFFER_SIZE);
-            
-            $message = substr($message, Socket::BUFFER_SIZE);
-            $messageLength = strlen($message);
+        while ($frameLength > Socket::BUFFER_SIZE) {
+            $buffer = substr($frameData, 0, Socket::BUFFER_SIZE);
+            $bytes = $this->socket->write($buffer, Socket::BUFFER_SIZE);
+
+            $frameData = substr($frameData, $bytes);
+            $frameLength = strlen($frameData);
         }
         
-        if ($messageLength == 0) {
+        if ($frameLength == 0) {
             return;
         }
         
-        $this->socket->write($message, $messageLength);
+        $this->socket->write($frameData, $frameLength);
     }
 }
