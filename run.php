@@ -8,5 +8,6 @@ use Mib\Component\WebSocket\ServerFactory;
 $server = ServerFactory::create('localhost', 9999);
 
 $server->registerCommand(new \Mib\Component\WebSocket\Command\ServerInfo());
+$server->registerCommand(new \Mib\Component\WebSocket\Command\SystemInfo());
 
 $server->run();
